@@ -1,37 +1,34 @@
-# Ranking Unoeste - GitHub Pages
+# Ranking Unoeste — Supabase + GitHub Pages
 
 Arquivos principais:
 
 - `index.html`: tela do ranking para abrir na TV.
-- `dados.json`: arquivo com os nomes e números do ranking.
-- `admin.html`: editor simples para gerar um novo `dados.json`.
+- `admin.html`: painel para atualizar as matrículas.
+- `dados.json`: backup local dos dados iniciais.
 
-## Como publicar no GitHub Pages
+## Supabase
 
-1. Crie um repositório no GitHub.
-2. Envie estes 3 arquivos para a raiz do repositório.
-3. Vá em **Settings > Pages**.
-4. Em **Build and deployment**, escolha **Deploy from a branch**.
-5. Selecione a branch `main` e a pasta `/root`.
-6. Clique em **Save**.
+A tabela usada é `ranking`, com as colunas:
 
-Depois, acesse o link que o GitHub Pages gerar.
+- `id`
+- `nome`
+- `valor`
+- `tipo` (`presencial` ou `ead`)
+- `ordem`
+- `ativo`
+- `created_at`
 
-## Como atualizar o ranking
+## Como usar
 
-Opção mais simples:
+1. Publique estes arquivos no GitHub Pages.
+2. Abra `index.html` na TV.
+3. Abra `admin.html` no computador/celular.
+4. Use `+` ou `-` para atualizar os números.
+5. Clique em salvar.
 
-1. Abra o arquivo `dados.json` no GitHub.
-2. Clique no lápis para editar.
-3. Altere os valores.
-4. Clique em **Commit changes**.
-5. O ranking busca o `dados.json` novamente a cada 30 segundos.
+A tela da TV busca os dados no Supabase e atualiza automaticamente.
 
-Opção usando o editor:
+## Observação de segurança
 
-1. Abra `admin.html` no navegador.
-2. Edite os dados.
-3. Clique em **Baixar dados.json**.
-4. Substitua o arquivo `dados.json` no repositório.
-
-Observação: o GitHub Pages é uma hospedagem estática, então o `admin.html` não grava direto no GitHub sem uma integração mais avançada com token/API.
+As regras atuais liberam escrita pública temporariamente para facilitar o teste.
+Para uso definitivo, o ideal é configurar login no painel administrativo.
