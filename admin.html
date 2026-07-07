@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Editar dados do ranking</title>
+<style>
+body{font-family:Arial,sans-serif;background:#111;color:#f5f5f5;margin:0;padding:24px}main{max-width:900px;margin:auto}.card{background:#1d1d1d;border:1px solid #333;border-radius:10px;padding:18px;margin-bottom:16px}h1{margin-top:0}textarea{width:100%;min-height:190px;background:#080808;color:#fff;border:1px solid #444;border-radius:8px;padding:12px;font-family:Consolas,monospace}button{background:#d4a843;color:#111;border:0;border-radius:8px;padding:12px 18px;font-weight:bold;cursor:pointer;margin-right:8px}small{color:#aaa}pre{background:#080808;border-radius:8px;padding:12px;overflow:auto}</style>
+</head>
+<body>
+<main>
+<h1>Editor de dados do ranking</h1>
+<div class="card"><p>Edite os dados abaixo e clique em <b>Baixar dados.json</b>. Depois envie esse arquivo para o repositório no GitHub, substituindo o antigo <code>dados.json</code>.</p><small>O GitHub Pages é estático; por segurança, esta página não grava direto no repositório.</small></div>
+<div class="card"><h2>Presencial</h2><textarea id="presencial"></textarea></div>
+<div class="card"><h2>EAD / Semipresencial</h2><textarea id="ead"></textarea></div>
+<button onclick="baixar()">Baixar dados.json</button><button onclick="carregar()">Recarregar dados atuais</button>
+<div class="card"><h2>Formato</h2><pre>Nome, número
+Exemplo: Fabricia Rocha, 39</pre></div>
+</main>
+<script>
+async function carregar(){
+ try{ const r=await fetch('dados.json?cache='+Date.now()); const d=await r.json();
+  document.getElementById('presencial').value=(d.presencial||[]).map(x=>(x.name||x.nome)+', '+(x.value??x.valor??0)).join('
+');
+  document.getElementById('ead').value=(d.ead||[]).map(x=>(x.name||x.nome)+', '+(x.value??x.valor??0)).join('
+');
+ }catch(e){ alert('Não consegui carregar o dados.json.'); }
+}
+function parse(txt){return txt.split('
+').map(l=>l.trim()).filter(Boolean).map(l=>{const i=l.lastIndexOf(','); if(i<0) throw new Error('Linha sem vírgula: '+l); return {name:l.slice(0,i).trim(), value:Math.round(Number(l.slice(i+1).replace(',','.'))||0)};});}
+function baixar(){
+ try{const dados={presencial:parse(document.getElementById('presencial').value),ead:parse(document.getElementById('ead').value)}; const blob=new Blob([JSON.stringify(dados,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='dados.json'; a.click(); URL.revokeObjectURL(a.href);}catch(e){alert(e.message)}
+}
+carregar();
+</script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+{
+  "presencial": [
+    {
+      "name": "Fabricia Rocha",
+      "value": 31
+    },
+    {
+      "name": "Cauã Ferreira Alves",
+      "value": 26
+    },
+    {
+      "name": "Giovanna Cassinelli",
+      "value": 26
+    },
+    {
+      "name": "Murilo Borges Galdino",
+      "value": 24
+    },
+    {
+      "name": "Rafaella Stigliano",
+      "value": 17
+    },
+    {
+      "name": "Giovanna Santos Sassi",
+      "value": 15
+    },
+    {
+      "name": "Luis Augusto",
+      "value": 15
+    },
+    {
+      "name": "Murillo Alves",
+      "value": 14
+    },
+    {
+      "name": "Nicoly Aguiar",
+      "value": 13
+    },
+    {
+      "name": "Julia Moreira de Souza",
+      "value": 12
+    },
+    {
+      "name": "João Gabriel Barreto Mendes",
+      "value": 10
+    },
+    {
+      "name": "Isadora Longo",
+      "value": 8
+    },
+    {
+      "name": "Majori Gabriely",
+      "value": 8
+    },
+    {
+      "name": "Emanoel Bernardo",
+      "value": 7
+    }
+  ],
+  "ead": [
+    {
+      "name": "Alline Corsaletti",
+      "value": 0
+    },
+    {
+      "name": "Caroline Alves",
+      "value": 0
+    },
+    {
+      "name": "Felipe Caro",
+      "value": 0
+    },
+    {
+      "name": "Guilherme Jozima",
+      "value": 0
+    },
+    {
+      "name": "Mariana",
+      "value": 0
+    },
+    {
+      "name": "Mario Dias",
+      "value": 0
+    },
+    {
+      "name": "Micheline Dantas",
+      "value": 0
+    },
+    {
+      "name": "Tamyres",
+      "value": 0
+    },
+    {
+      "name": "Vinicius Bonfim",
+      "value": 0
+    }
+  ]
+}
