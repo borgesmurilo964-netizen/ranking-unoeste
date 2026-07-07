@@ -1,104 +1,37 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Painel Admin — Ranking Unoeste</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Ranking Unoeste</title>
 <style>
-*{box-sizing:border-box}body{font-family:Arial,sans-serif;background:#111;color:#f5f5f5;margin:0;padding:24px}main{max-width:1100px;margin:auto}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}h1{margin:0;color:#d4a843;font-size:30px}.muted{color:#aaa}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card{background:#1d1d1d;border:1px solid #333;border-radius:12px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25)}.card h2{margin:0 0 12px}.pres h2{color:#d4a843}.ead h2{color:#f07828}table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:1px solid #333;text-align:left}th{color:#aaa;font-size:12px;text-transform:uppercase;letter-spacing:1px}td.nome{font-weight:bold}.controls{display:flex;align-items:center;gap:6px;justify-content:flex-end}.btn{border:0;border-radius:8px;padding:9px 12px;font-weight:bold;cursor:pointer}.plus{background:#2aa84a;color:white}.minus{background:#8a2d2d;color:white}.save{background:#d4a843;color:#111}.refresh{background:#333;color:#fff}.zero{background:#4a2323;color:#fff}.btn:disabled{opacity:.5;cursor:not-allowed}input[type=number]{width:72px;background:#080808;color:#fff;border:1px solid #555;border-radius:8px;padding:9px;text-align:center;font-weight:bold}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.toast{position:fixed;right:18px;bottom:18px;background:#0f5132;color:#fff;padding:14px 18px;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.4);opacity:0;transform:translateY(10px);transition:.25s}.toast.show{opacity:1;transform:translateY(0)}.error{background:#842029}.hint{background:#181818;border:1px solid #333;border-radius:10px;padding:12px;margin-bottom:18px;color:#ddd}.small{font-size:13px}.total{font-size:14px;color:#ddd;margin-bottom:10px}@media(max-width:850px){.grid{grid-template-columns:1fr}body{padding:14px}h1{font-size:24px}}
+*{box-sizing:border-box}body{margin:0;background:#0f0f0f;color:#f5f0e6;font-family:Arial,sans-serif}main{max-width:1120px;margin:0 auto;padding:24px}.top{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:18px}.title h1{margin:0;color:#d4a843;font-size:30px}.title p{margin:6px 0 0;color:#aaa}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;border-radius:10px;padding:11px 16px;font-weight:800;cursor:pointer}.btn-gold{background:#d4a843;color:#111}.btn-orange{background:#f07828;color:#170e03}.btn-dark{background:#222;color:#eee;border:1px solid #444}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card{background:#181818;border:1px solid #333;border-radius:14px;overflow:hidden}.card h2{margin:0;padding:16px 18px;border-bottom:1px solid #333}.pres h2{color:#d4a843}.ead h2{color:#f07828}.row{display:grid;grid-template-columns:42px 1fr 46px 82px 46px;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.06)}.row:last-child{border-bottom:0}.rank{color:#999;font-weight:bold}.name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mini{width:42px;height:36px;border-radius:8px;border:1px solid #444;background:#242424;color:#fff;font-size:20px;font-weight:bold;cursor:pointer}.mini.plus{background:#14351f;border-color:#2f7d46}.mini.minus{background:#351414;border-color:#7d2f2f}.val{width:82px;background:#080808;color:#fff;border:1px solid #555;border-radius:8px;padding:9px;text-align:center;font-weight:bold;font-size:16px}.status{margin-top:14px;color:#aaa;min-height:22px}.ok{color:#7be495}.err{color:#ff8d8d}@media(max-width:800px){.grid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.row{grid-template-columns:34px 1fr 42px 72px 42px}main{padding:14px}}
 </style>
 </head>
 <body>
 <main>
   <div class="top">
-    <div>
-      <h1>Painel do Ranking Unoeste</h1>
-      <div class="muted small">Atualize as matrículas no Supabase. A TV atualiza automaticamente.</div>
-    </div>
-    <button class="btn refresh" onclick="carregar()">🔄 Recarregar</button>
+    <div class="title"><h1>Admin — Ranking Unoeste</h1><p>Atualize as matrículas. A TV atualiza automaticamente em alguns segundos.</p></div>
+    <div class="actions"><button class="btn btn-dark" onclick="carregar()">Recarregar</button><button class="btn btn-gold" onclick="salvarTudo()">Salvar alterações</button></div>
   </div>
-
-  <div class="hint small">
-    Use os botões <b>+1</b> e <b>-1</b> para alterar rapidamente. Depois clique em <b>Salvar alterações</b> no card correspondente.
-  </div>
-
   <div class="grid">
-    <section class="card pres">
-      <h2>🏆 Presencial</h2>
-      <div class="total" id="total-presencial">Total: 0</div>
-      <table id="tbl-presencial"><thead><tr><th>#</th><th>Consultor</th><th style="text-align:right">Matrículas</th></tr></thead><tbody></tbody></table>
-      <div class="actions"><button class="btn save" onclick="salvar('presencial')">💾 Salvar alterações</button><button class="btn zero" onclick="zerar('presencial')">Zerar presencial</button></div>
-    </section>
-
-    <section class="card ead">
-      <h2>🎓 EAD / Semipresencial</h2>
-      <div class="total" id="total-ead">Total: 0</div>
-      <table id="tbl-ead"><thead><tr><th>#</th><th>Consultor</th><th style="text-align:right">Matrículas</th></tr></thead><tbody></tbody></table>
-      <div class="actions"><button class="btn save" onclick="salvar('ead')">💾 Salvar alterações</button><button class="btn zero" onclick="zerar('ead')">Zerar EAD</button></div>
-    </section>
+    <section class="card pres"><h2>🏆 Presencial</h2><div id="presencial"></div></section>
+    <section class="card ead"><h2>🎓 EAD / Semipresencial</h2><div id="ead"></div></section>
   </div>
+  <div id="status" class="status">Carregando...</div>
 </main>
-<div id="toast" class="toast"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL = "https://dckgbwmbasqfnpnfrddm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_IdbBp9OYHL_fj0lLm4wM5A_ooSjOey1";
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-let rows = [];
-
-function toast(msg, erro=false){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.toggle('error', erro); t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3000);
-}
-function getRows(tipo){
-  return rows.filter(r=>r.tipo===tipo && r.ativo!==false).sort((a,b)=>Number(b.valor||0)-Number(a.valor||0) || Number(a.ordem||0)-Number(b.ordem||0));
-}
-function render(tipo){
-  const data=getRows(tipo);
-  const tbody=document.querySelector(`#tbl-${tipo} tbody`);
-  tbody.innerHTML=data.map((r,i)=>`<tr data-id="${r.id}">
-    <td>${i+1}º</td>
-    <td class="nome">${r.nome}</td>
-    <td><div class="controls">
-      <button class="btn minus" onclick="alterar(${r.id},-1)">−</button>
-      <input type="number" min="0" value="${Number(r.valor||0)}" onchange="setValor(${r.id}, this.value)">
-      <button class="btn plus" onclick="alterar(${r.id},1)">+</button>
-    </div></td>
-  </tr>`).join('');
-  const total=data.reduce((s,r)=>s+Number(r.valor||0),0);
-  document.getElementById(`total-${tipo}`).textContent=`Total: ${total}`;
-}
-function renderAll(){ render('presencial'); render('ead'); }
-async function carregar(){
-  const {data,error}=await sb.from('ranking').select('*').order('tipo').order('ordem');
-  if(error){ toast('Erro ao carregar: '+error.message,true); return; }
-  rows=data||[]; renderAll();
-}
-function alterar(id,delta){
-  const r=rows.find(x=>x.id===id); if(!r)return;
-  r.valor=Math.max(0,Number(r.valor||0)+delta); renderAll();
-}
-function setValor(id,value){
-  const r=rows.find(x=>x.id===id); if(!r)return;
-  r.valor=Math.max(0,parseInt(value,10)||0); renderAll();
-}
-async function salvar(tipo){
-  const data=rows.filter(r=>r.tipo===tipo).map(r=>({id:r.id,valor:Number(r.valor||0)}));
-  for(const r of data){
-    const {error}=await sb.from('ranking').update({valor:r.valor}).eq('id',r.id);
-    if(error){ toast('Erro ao salvar: '+error.message,true); return; }
-  }
-  toast('✅ '+(tipo==='ead'?'EAD':'Presencial')+' salvo com sucesso!');
-}
-async function zerar(tipo){
-  if(!confirm('Zerar todos os valores de '+(tipo==='ead'?'EAD':'Presencial')+'?')) return;
-  rows.filter(r=>r.tipo===tipo).forEach(r=>r.valor=0);
-  renderAll(); await salvar(tipo);
-}
+let dados = [];
+function st(msg,cls=''){const el=document.getElementById('status');el.className='status '+cls;el.textContent=msg;}
+async function api(path,opt={}){const r=await fetch(SUPABASE_URL+'/rest/v1/'+path,{...opt,headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,'Content-Type':'application/json',Prefer:'return=representation',...(opt.headers||{})}});if(!r.ok)throw new Error(await r.text());return r.status===204?null:r.json();}
+async function carregar(){try{st('Carregando dados...');dados=await api('ranking?select=id,nome,valor,tipo,ordem,ativo&ativo=eq.true&order=tipo.asc,ordem.asc');render('presencial');render('ead');st('Dados carregados. Faça as alterações e clique em Salvar.','ok')}catch(e){console.error(e);st('Erro ao carregar: '+e.message,'err')}}
+function render(tipo){const box=document.getElementById(tipo);const arr=dados.filter(x=>x.tipo===tipo).sort((a,b)=>a.ordem-b.ordem);box.innerHTML=arr.map((c,i)=>`<div class="row" data-id="${c.id}"><div class="rank">${i+1}º</div><div class="name">${c.nome}</div><button class="mini minus" onclick="inc(${c.id},-1)">−</button><input class="val" type="number" min="0" value="${c.valor}" onchange="setv(${c.id},this.value)"><button class="mini plus" onclick="inc(${c.id},1)">+</button></div>`).join('')}
+function setv(id,v){const c=dados.find(x=>x.id===id);if(c)c.valor=Math.max(0,parseInt(v,10)||0)}
+function inc(id,n){const c=dados.find(x=>x.id===id);if(!c)return;c.valor=Math.max(0,(parseInt(c.valor,10)||0)+n);render(c.tipo)}
+async function salvarTudo(){try{st('Salvando...');for(const c of dados){await api('ranking?id=eq.'+c.id,{method:'PATCH',body:JSON.stringify({valor:parseInt(c.valor,10)||0})})}st('✅ Salvo! A TV deve atualizar em até 5 segundos.','ok')}catch(e){console.error(e);st('Erro ao salvar: '+e.message,'err')}}
 carregar();
-sb.channel('ranking-admin')
-  .on('postgres_changes', {event:'*', schema:'public', table:'ranking'}, carregar)
-  .subscribe();
 </script>
 </body>
 </html>

@@ -263,7 +263,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:Geo
 
 </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){"use strict";
 /* AVATARS */
@@ -505,7 +504,7 @@ function ChartEngine(cfg){
    INSTANTIATE
 ═══════════════════════════════════════════════════════════════════════════ */
 var DEFAULT_DATA = {
-  presencial: [{"name": "Fabricia Rocha", "value": 31}, {"name": "Cauã Ferreira Alves", "value": 26}, {"name": "Giovanna Cassinelli", "value": 26}, {"name": "Murilo Borges Galdino", "value": 24}, {"name": "Rafaella Stigliano", "value": 17}, {"name": "Giovanna Santos Sassi", "value": 15}, {"name": "Luis Augusto", "value": 15}, {"name": "Murillo Alves", "value": 14}, {"name": "Nicoly Aguiar", "value": 13}, {"name": "Julia Moreira de Souza", "value": 12}, {"name": "João Gabriel Barreto Mendes", "value": 10}, {"name": "Isadora Longo", "value": 8}, {"name": "Majori Gabriely", "value": 8}, {"name": "Emanoel Bernardo", "value": 7}],
+  presencial: [{"name": "Fabricia Rocha", "value": 39}, {"name": "Cauã Ferreira Alves", "value": 26}, {"name": "Giovanna Cassinelli", "value": 26}, {"name": "Murilo Borges Galdino", "value": 24}, {"name": "Rafaella Stigliano", "value": 17}, {"name": "Giovanna Santos Sassi", "value": 15}, {"name": "Luis Augusto", "value": 15}, {"name": "Murillo Alves", "value": 14}, {"name": "Nicoly Aguiar", "value": 13}, {"name": "Julia Moreira de Souza", "value": 12}, {"name": "João Gabriel Barreto Mendes", "value": 10}, {"name": "Isadora Longo", "value": 8}, {"name": "Majori Gabriely", "value": 8}, {"name": "Emanoel Bernardo", "value": 7}],
   ead: [{"name": "Alline Corsaletti", "value": 0}, {"name": "Caroline Alves", "value": 0}, {"name": "Felipe Caro", "value": 0}, {"name": "Guilherme Jozima", "value": 0}, {"name": "Mariana", "value": 0}, {"name": "Mario Dias", "value": 0}, {"name": "Micheline Dantas", "value": 0}, {"name": "Tamyres", "value": 0}, {"name": "Vinicius Bonfim", "value": 0}]
 };
 
@@ -514,47 +513,50 @@ window.charts=[
   ChartEngine({id:1,colors:CE,avMap:AVATARS_E,data:DEFAULT_DATA.ead})
 ];
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   SUPABASE DATA SOURCE
+   A tela da TV lê os dados direto do Supabase. Assim, qualquer notebook
+   com o admin.html atualiza o ranking para todos os dispositivos.
+═══════════════════════════════════════════════════════════════════════════ */
 var SUPABASE_URL = "https://dckgbwmbasqfnpnfrddm.supabase.co";
 var SUPABASE_KEY = "sb_publishable_IdbBp9OYHL_fj0lLm4wM5A_ooSjOey1";
-var sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
-var lastDataSignature = "";
+var lastDataHash = "";
 
-function normalizarDadosSupabase(rows){
-  var presencial = [], ead = [];
-  (rows || []).forEach(function(r){
-    var item = { name: r.nome, value: Number(r.valor || 0) };
-    if(r.tipo === "ead") ead.push(item);
-    else presencial.push(item);
+async function buscarRanking(tipo){
+  var url = SUPABASE_URL + "/rest/v1/ranking?select=id,nome,valor,tipo,ordem,ativo&tipo=eq." + encodeURIComponent(tipo) + "&ativo=eq.true&order=valor.desc,ordem.asc";
+  var resp = await fetch(url,{
+    headers:{
+      "apikey": SUPABASE_KEY,
+      "Authorization": "Bearer " + SUPABASE_KEY,
+      "Accept": "application/json"
+    },
+    cache:"no-store"
   });
-  presencial.sort(function(a,b){ return b.value-a.value || a.name.localeCompare(b.name); });
-  ead.sort(function(a,b){ return b.value-a.value || a.name.localeCompare(b.name); });
-  return {presencial: presencial, ead: ead};
+  if(!resp.ok){
+    throw new Error("Erro Supabase " + resp.status);
+  }
+  var rows = await resp.json();
+  return rows.map(function(r){
+    return {name:r.nome,value:Number(r.valor)||0};
+  });
 }
 
 async function carregarDadosExternos(){
   try{
-    if(!sb) throw new Error("Supabase não carregou");
-    var result = await sb.from("ranking").select("id,nome,valor,tipo,ordem,ativo").eq("ativo", true).order("tipo").order("valor", {ascending:false}).order("ordem", {ascending:true});
-    if(result.error) throw result.error;
-    var dados = normalizarDadosSupabase(result.data || []);
-    var sig = JSON.stringify(dados);
-    if(sig === lastDataSignature) return;
-    lastDataSignature = sig;
-    if(dados.presencial.length) charts[0].setExternalData(dados.presencial);
-    if(dados.ead.length) charts[1].setExternalData(dados.ead);
+    var pres = await buscarRanking("presencial");
+    var ead  = await buscarRanking("ead");
+    var h = JSON.stringify({presencial:pres,ead:ead});
+    if(h === lastDataHash) return;
+    lastDataHash = h;
+    if(pres.length) charts[0].setExternalData(pres);
+    if(ead.length) charts[1].setExternalData(ead);
   }catch(e){
-    console.warn("Usando dados padrão do HTML:", e.message || e);
+    console.warn("Não foi possível carregar do Supabase. Usando dados padrão/local:", e.message);
   }
 }
 
 carregarDadosExternos();
-setInterval(carregarDadosExternos,10000);
-
-if(sb){
-  sb.channel("ranking-tv")
-    .on("postgres_changes", {event:"*", schema:"public", table:"ranking"}, function(){ carregarDadosExternos(); })
-    .subscribe();
-}
+setInterval(carregarDadosExternos,5000);
 
 /* ═══════════════════════════════════════════════════════
    2-SCREEN AUTO-SWITCH  (Presencial ↔ EAD, 20s cada)

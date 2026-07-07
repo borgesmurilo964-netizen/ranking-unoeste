@@ -1,34 +1,16 @@
 # Ranking Unoeste — Supabase + GitHub Pages
 
-Arquivos principais:
-
-- `index.html`: tela do ranking para abrir na TV.
-- `admin.html`: painel para atualizar as matrículas.
-- `dados.json`: backup local dos dados iniciais.
-
-## Supabase
-
-A tabela usada é `ranking`, com as colunas:
-
-- `id`
-- `nome`
-- `valor`
-- `tipo` (`presencial` ou `ead`)
-- `ordem`
-- `ativo`
-- `created_at`
+Arquivos:
+- `index.html`: tela da TV. Lê dados do Supabase e alterna Presencial/EAD automaticamente.
+- `admin.html`: painel para atualizar matrículas com botões + e -.
+- `dados.json`: backup local dos dados antigos.
 
 ## Como usar
-
 1. Publique estes arquivos no GitHub Pages.
 2. Abra `index.html` na TV.
-3. Abra `admin.html` no computador/celular.
-4. Use `+` ou `-` para atualizar os números.
-5. Clique em salvar.
+3. Abra `admin.html` em outro notebook.
+4. Altere os valores e clique em **Salvar alterações**.
+5. A TV atualiza em até 5 segundos.
 
-A tela da TV busca os dados no Supabase e atualiza automaticamente.
-
-## Observação de segurança
-
-As regras atuais liberam escrita pública temporariamente para facilitar o teste.
-Para uso definitivo, o ideal é configurar login no painel administrativo.
+## Observação
+O Supabase já está configurado no código com a URL e chave pública do projeto informado.
