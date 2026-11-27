@@ -5,7 +5,7 @@ Hospedado na **Vercel**, com dados no **Supabase**. Cada push na `main` gera um 
 
 | Rota | O que é |
 |---|---|
-| `/` | Tela da TV. Alterna **Presencial → EAD → Gráfico geral**, 20 s cada, com a transição do Uninho |
+| `/` | Tela da TV. Alterna **Presencial ↔ EAD**, 20 s cada, com a transição do Uninho |
 | `/admin` | Painel para atualizar as matrículas (botões + / −) e trocar as fotos dos consultores |
 
 ## Como funciona
@@ -19,7 +19,7 @@ Hospedado na **Vercel**, com dados no **Supabase**. Cada push na `main` gera um 
 ```
 index.html          tela da TV (/)
 admin/index.html    painel admin (/admin)
-src/tv.js, tv.css   corrida, gráfico, rotação, auto-atualização
+src/tv.js, tv.css   corrida, rotação, auto-atualização
 src/admin.js, .css  painel admin + upload de foto
 src/supabase.js     acesso ao Supabase (lê as variáveis de ambiente)
 public/             logo da Unoeste e mascote Uninho

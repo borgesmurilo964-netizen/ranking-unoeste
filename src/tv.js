@@ -173,53 +173,6 @@ function ChartEngine(cfg) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   TELA 3 — GRÁFICO DE BARRAS (Presencial × EAD)
-═══════════════════════════════════════════════════════════════════════════ */
-function nomeCurto(nome) {
-  const p = nome.trim().split(/\s+/);
-  return p.length <= 2 ? p.join(' ') : p[0] + ' ' + p[p.length - 1];
-}
-
-const Grafico = {
-  data: { presencial: [], ead: [] },
-  set(d) { this.data = d; },
-  render(animar) {
-    const { presencial, ead } = this.data;
-    const max = Math.max(1, ...presencial.map((d) => d.value), ...ead.map((d) => d.value));
-    const n = Math.max(presencial.length, ead.length, 1);
-    // Altura de linha e fonte derivadas da quantidade de consultores
-    const box = $('gbp');
-    const h = box.clientHeight || window.innerHeight * 0.65;
-    const rh = Math.min(h / n, window.innerHeight * 0.085);
-    const fs = Math.max(12, Math.min(34, rh * 0.5));
-    for (const [id, arr] of [['gbp', presencial], ['gbe', ead]]) {
-      const el = $(id);
-      el.style.setProperty('--n', n);
-      el.style.setProperty('--rh', rh + 'px');
-      el.style.setProperty('--fs', fs + 'px');
-      const rows = [...arr].sort((a, b) => b.value - a.value || a.name.localeCompare(b.name, 'pt-BR'));
-      const prev = {};
-      el.querySelectorAll('.gbr').forEach((r) => { prev[r.dataset.nome] = r.querySelector('.gbb').style.width; });
-      el.innerHTML = rows.length
-        ? rows.map((r, i) => `<div class="gbr" data-nome="${esc(r.name)}"><span class="gbn" title="${esc(r.name)}"><i>${i + 1}º</i>${esc(nomeCurto(r.name))}</span><span class="gbt"><span class="gbb" data-w="${(r.value / max) * 100}%"></span></span><span class="gbv">${r.value}</span></div>`).join('')
-        : '<div class="gempty">Sem dados</div>';
-      el.querySelectorAll('.gbr').forEach((r) => {
-        const b = r.querySelector('.gbb');
-        b.style.width = animar ? '0%' : prev[r.dataset.nome] || '0%';
-      });
-    }
-    const tp = presencial.reduce((s, d) => s + d.value, 0);
-    const te = ead.reduce((s, d) => s + d.value, 0);
-    $('totp').textContent = tp;
-    $('tote').textContent = te;
-    $('totg').textContent = tp + te;
-    // força reflow e aplica a largura final (a transição CSS anima)
-    void document.body.offsetHeight;
-    requestAnimationFrame(() => document.querySelectorAll('#sc2 .gbb').forEach((b) => { b.style.width = b.dataset.w; }));
-  },
-};
-
-/* ═══════════════════════════════════════════════════════════════════════════
    DADOS DO SUPABASE
 ═══════════════════════════════════════════════════════════════════════════ */
 const charts = [ChartEngine({ id: 0, colors: CP }), ChartEngine({ id: 1, colors: CE })];
@@ -247,8 +200,6 @@ async function carregarRanking() {
     lastHash = h;
     charts[0].setData(d.presencial, cur === 0 && !primeira);
     charts[1].setData(d.ead, cur === 1 && !primeira);
-    Grafico.set(d);
-    if (cur === 2) Grafico.render(false);
     if (primeira) mostrarTela(cur);
   } catch (e) {
     console.warn('Falha ao ler o ranking:', e.message);
@@ -263,28 +214,26 @@ async function carregarFotos() {
     if (h === lastFotosHash) return;
     lastFotosHash = h;
     FOTOS = f;
-    if (cur < 2 && charts[cur].data.length) charts[cur].runRace();
+    if (charts[cur].data.length) charts[cur].runRace();
   } catch (e) {
     console.warn('Falha ao ler as fotos:', e.message);
   }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   ROTAÇÃO AUTOMÁTICA  Presencial → EAD → Gráfico → …
+   ROTAÇÃO AUTOMÁTICA  Presencial ↔ EAD
 ═══════════════════════════════════════════════════════════════════════════ */
-const N_TELAS = 3;
+const N_TELAS = 2;
 const MSGS = [
   { txt: '🎓 Agora, o Ranking EAD!', bdg: 'EAD / Semipresencial' },              // 0 → 1
-  { txt: '📊 Agora, o Placar Geral!', bdg: 'Presencial × EAD' },                // 1 → 2
-  { txt: '🏆 Voltamos ao Ranking Presencial!', bdg: 'Matrículas Presenciais' }, // 2 → 0
+  { txt: '🏆 Voltamos ao Ranking Presencial!', bdg: 'Matrículas Presenciais' }, // 1 → 0
 ];
-const CC = ['#118F40', '#DC931A', 'linear-gradient(90deg,#118F40,#DC931A)'];
+const CC = ['#118F40', '#DC931A'];
 let t0 = null, cTm = null, cTk = null;
 let novaVersao = false;
 
 function mostrarTela(idx) {
-  if (idx < 2) charts[idx].runRace();
-  else Grafico.render(true);
+  charts[idx].runRace();
 }
 
 function activateScreen(idx) {
