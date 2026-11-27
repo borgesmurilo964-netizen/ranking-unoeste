@@ -104,3 +104,80 @@ html,body{width:100%;height:100%;overflow:hidden;background:#fff;color:#1c231f;f
   font-size:clamp(10px,.9vw,14px);color:#8a5a00;background:#fff4dc;
   border:1px solid #f0c060;border-radius:4px;padding:3px 8px}
 
+
+/* ══ PÓDIO ═════════════════════════════════════════════════════════════════
+   Blocos amarelos 2 · 1 · 3 (como o pódio de referência), foto redonda,
+   nome e matrículas em cima de cada bloco. Tamanhos em vh para ler de longe. */
+.scr-pod{align-items:center;padding:0}
+.sp.scr-pod::before,.se.scr-pod::before{display:none}
+.pod-bg{position:absolute;inset:0;z-index:0;overflow:hidden}
+.pod-bg-p{background:radial-gradient(ellipse at 50% 65%,#e3f5ea 0%,#ffffff 70%)}
+.pod-bg-e{background:radial-gradient(ellipse at 50% 65%,#fdf0dc 0%,#ffffff 70%)}
+.pod-bg::after{content:"";position:absolute;inset:0;
+  background-image:
+    radial-gradient(3px 3px at 12% 30%,rgba(17,143,64,.45) 0%,transparent 100%),
+    radial-gradient(3px 3px at 85% 22%,rgba(220,147,26,.45) 0%,transparent 100%),
+    radial-gradient(3px 3px at 50% 12%,rgba(240,207,111,.8) 0%,transparent 100%),
+    radial-gradient(4px 4px at 30% 55%,rgba(220,147,26,.35) 0%,transparent 100%),
+    radial-gradient(3px 3px at 72% 48%,rgba(17,143,64,.4) 0%,transparent 100%),
+    radial-gradient(3px 3px at 20% 75%,rgba(240,207,111,.7) 0%,transparent 100%),
+    radial-gradient(4px 4px at 92% 70%,rgba(17,143,64,.3) 0%,transparent 100%),
+    radial-gradient(3px 3px at 62% 20%,rgba(220,147,26,.4) 0%,transparent 100%);
+  animation:twinkle 3s ease-in-out infinite alternate}
+@keyframes twinkle{0%{opacity:.45}100%{opacity:1}}
+
+.pod-content{position:relative;z-index:1;width:100%;height:100%;
+  display:flex;flex-direction:column;align-items:center;padding:18px 26px 0}
+.pod-title{font-size:clamp(22px,4.6vh,54px);letter-spacing:3px;text-transform:uppercase;
+  font-weight:700;text-align:center;margin:0.4vh 0 0}
+.pod-title-p{color:#118F40}.pod-title-e{color:#DC931A}
+
+.pod-stands{flex:1;min-height:0;width:100%;max-width:1400px;display:flex;
+  align-items:flex-end;justify-content:center;gap:0;padding-bottom:5vh;position:relative}
+/* base comprida embaixo dos três blocos */
+.pod-stands::after{content:"";position:absolute;left:50%;transform:translateX(-50%);
+  bottom:calc(5vh - 1.6vh);height:1.6vh;width:min(92%,calc(3 * var(--pw) + 8vw));
+  background:#f6d564;border-radius:3px;
+  box-shadow:0 1.2vh 1.6vh -0.8vh rgba(80,110,100,.35)}
+.pod-stands{--pw:clamp(170px,21vw,400px)}
+
+.pst{display:flex;flex-direction:column;align-items:center;width:var(--pw);
+  position:relative;z-index:1;opacity:0;transform:translateY(40px);
+  transition:opacity .7s,transform .7s cubic-bezier(.2,.8,.2,1)}
+.pst.in{opacity:1;transform:translateY(0)}
+.pst[data-r="1"]{order:2;z-index:2}.pst[data-r="2"]{order:1}.pst[data-r="3"]{order:3}
+
+.pface{border-radius:50%;background:#fff center top/cover no-repeat;flex-shrink:0;
+  margin-bottom:1.2vh;animation:podBob 2.2s ease-in-out infinite;position:relative;
+  display:flex;align-items:center;justify-content:center}
+.pface svg{width:80%;height:80%;transform:scaleX(-1)}
+@keyframes podBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.pst[data-r="1"] .pface{width:24vh;height:24vh;border:0.7vh solid #f0c43c;
+  box-shadow:0 0 0 0.5vh rgba(240,196,60,.3),0 1.2vh 3vh rgba(0,0,0,.25)}
+.pst[data-r="2"] .pface{width:19vh;height:19vh;border:0.6vh solid #c9ced3;
+  box-shadow:0 0 0 0.4vh rgba(200,205,210,.35),0 1vh 2.4vh rgba(0,0,0,.22)}
+.pst[data-r="3"] .pface{width:17vh;height:17vh;border:0.6vh solid #d39361;
+  box-shadow:0 0 0 0.4vh rgba(211,147,97,.3),0 1vh 2.4vh rgba(0,0,0,.22)}
+.pst[data-r="1"] .pface::before{content:"👑";position:absolute;top:-6.2vh;
+  font-size:6vh;animation:crownBob 2s ease-in-out infinite}
+@keyframes crownBob{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-6px) rotate(6deg)}}
+
+.pnm{font-size:clamp(14px,3.2vh,40px);font-weight:700;color:#1c231f;text-align:center;
+  max-width:96%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.15}
+.pst[data-r="1"] .pnm{font-size:clamp(16px,3.8vh,46px)}
+.pvl{font-size:clamp(13px,2.7vh,32px);font-weight:700;margin:0.4vh 0 3.6vh;color:#1c231f}
+.pvl b{font-size:1.3em;font-variant-numeric:tabular-nums}
+.sp .pvl b{color:#118F40}.se .pvl b{color:#c8790a}
+
+/* bloco amarelo com tampa mais larga, número branco grande */
+.pblk{position:relative;width:100%;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,#f8dc72 0%,#f3cf55 100%);
+  color:#fff;font-family:Arial Black,Arial,sans-serif;font-weight:900;
+  text-shadow:0 0.3vh 0 rgba(200,150,20,.35)}
+.pblk::before{content:"";position:absolute;left:-4%;right:-4%;top:-2.4vh;height:2.4vh;
+  background:linear-gradient(180deg,#fbe48f,#f6d769);border-radius:3px 3px 0 0;
+  box-shadow:0 0.4vh 0.4vh rgba(200,150,20,.25)}
+.pst[data-r="1"] .pblk{height:26vh;font-size:16vh}
+.pst[data-r="2"] .pblk{height:17vh;font-size:11vh;background:linear-gradient(180deg,#f9e07e 0%,#f4d35f 100%)}
+.pst[data-r="3"] .pblk{height:12vh;font-size:8.5vh;background:linear-gradient(180deg,#f9e07e 0%,#f4d35f 100%)}
+.pst[data-r="1"] .pblk{box-shadow:-0.6vh 0 0.8vh -0.4vh rgba(180,130,20,.35),0.6vh 0 0.8vh -0.4vh rgba(180,130,20,.35)}

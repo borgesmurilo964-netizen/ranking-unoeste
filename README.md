@@ -5,7 +5,7 @@ Hospedado na **Vercel**, com dados no **Supabase**. Cada push na `main` gera um 
 
 | Rota | O que é |
 |---|---|
-| `/` | Tela da TV. Alterna **Presencial ↔ EAD**, 20 s cada, com a transição do Uninho |
+| `/` | Tela da TV. Alterna **Ranking Presencial → Pódio Presencial → Ranking EAD → Pódio EAD** (ranking 20 s, pódio 12 s), com a transição do Uninho |
 | `/admin` | Painel para atualizar as matrículas (botões + / −) e trocar as fotos dos consultores |
 
 ## Como funciona
@@ -19,7 +19,7 @@ Hospedado na **Vercel**, com dados no **Supabase**. Cada push na `main` gera um 
 ```
 index.html          tela da TV (/)
 admin/index.html    painel admin (/admin)
-src/tv.js, tv.css   corrida, rotação, auto-atualização
+src/tv.js, tv.css   corrida, pódio (top 3), rotação, auto-atualização
 src/admin.js, .css  painel admin + upload de foto
 src/supabase.js     acesso ao Supabase (lê as variáveis de ambiente)
 public/             logo da Unoeste e mascote Uninho
@@ -42,6 +42,8 @@ Tabelas usadas:
 4. insere as fotos de todos os consultores que estavam no HTML antigo, **sem sobrescrever** as que já existem.
 
 Ele não apaga nada e pode ser rodado de novo sem problema. A seção 4 tem correções opcionais, comentadas (ver "Pendências").
+
+Dica: `/?tela=2` abre direto no pódio Presencial e `/?tela=3` no pódio EAD (útil para conferir).
 
 ## Rodar localmente
 

@@ -7,7 +7,7 @@ import { buscarRanking, buscarFotos, fotoDe, esc, configOk } from './supabase.js
 const POLL_RANKING_MS = 5000;        // atualização dos números
 const POLL_FOTOS_MS = 60000;         // atualização das fotos
 const CHECK_VERSAO_MS = 5 * 60000;   // procura deploy novo na Vercel
-const DURATION = 20000;              // tempo de cada tela
+const DURATION = 20000;              // tempo de cada tela de ranking (pódio: 12 s)
 
 const CP = ['#118F40', '#A2BD30', '#3d7a52', '#7a4fae', '#2f7da6', '#b5394f', '#4f8f6f', '#9a5fae', '#3f6fae', '#5fa68f', '#ae4f7a', '#6f8f3f', '#7f5f3f', '#2f9a6a', '#6fae4f'];
 const CE = ['#DC931A', '#e8a838', '#f0c060', '#c8790a', '#f0d090', '#d0891a', '#e8b048', '#c86e00', '#f0a840'];
@@ -173,6 +173,50 @@ function ChartEngine(cfg) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   PÓDIO (top 3 de cada modalidade)
+═══════════════════════════════════════════════════════════════════════════ */
+function nomeCurto(nome) {
+  const p = nome.trim().split(/\s+/);
+  return p.length <= 2 ? p.join(' ') : p[0] + ' ' + p[p.length - 1];
+}
+
+const Podio = {
+  data: [[], []], // [presencial, ead]
+  set(i, arr) { this.data[i] = arr; },
+  top3(i) {
+    return this.data[i]
+      .map((d, idx) => ({ ...d, idx }))
+      .sort((a, b) => b.value - a.value || a.idx - b.idx)
+      .slice(0, 3);
+  },
+  render(i, animar) {
+    const box = $('pod' + i);
+    const cores = i === 0 ? CP : CE;
+    const top = this.top3(i);
+    box.innerHTML = top
+      .map((d, r) => {
+        const foto = fotoDe(FOTOS, d.name);
+        const face = foto
+          ? `<div class="pface" style="background-image:url('${foto}')"></div>`
+          : `<div class="pface"><svg viewBox="0 0 100 100">${horseSVG(cores[d.idx % cores.length])}</svg></div>`;
+        const un = d.value === 1 ? 'matrícula' : 'matrículas';
+        return `<div class="pst${animar ? '' : ' in'}" data-r="${r + 1}">${face}
+          <div class="pnm" title="${esc(d.name)}">${esc(nomeCurto(d.name))}</div>
+          <div class="pvl"><b>${d.value}</b> ${un}</div>
+          <div class="pblk">${r + 1}</div></div>`;
+      })
+      .join('');
+    if (animar) {
+      // entra o 3º, depois o 2º e por último o 1º
+      [3, 2, 1].forEach((r, k) => setTimeout(() => {
+        const el = box.querySelector(`.pst[data-r="${r}"]`);
+        if (el) el.classList.add('in');
+      }, 250 + k * 650));
+    }
+  },
+};
+
+/* ═══════════════════════════════════════════════════════════════════════════
    DADOS DO SUPABASE
 ═══════════════════════════════════════════════════════════════════════════ */
 const charts = [ChartEngine({ id: 0, colors: CP }), ChartEngine({ id: 1, colors: CE })];
@@ -200,6 +244,11 @@ async function carregarRanking() {
     lastHash = h;
     charts[0].setData(d.presencial, cur === 0 && !primeira);
     charts[1].setData(d.ead, cur === 1 && !primeira);
+    const t0p = JSON.stringify([Podio.top3(0), Podio.top3(1)]);
+    Podio.set(0, d.presencial);
+    Podio.set(1, d.ead);
+    // pódio na tela: só redesenha se o top 3 mudou
+    if (cur >= 2 && !primeira && JSON.stringify([Podio.top3(0), Podio.top3(1)]) !== t0p) Podio.render(cur - 2, false);
     if (primeira) mostrarTela(cur);
   } catch (e) {
     console.warn('Falha ao ler o ranking:', e.message);
@@ -214,26 +263,32 @@ async function carregarFotos() {
     if (h === lastFotosHash) return;
     lastFotosHash = h;
     FOTOS = f;
-    if (charts[cur].data.length) charts[cur].runRace();
+    if (cur < 2 && charts[cur].data.length) charts[cur].runRace();
+    else if (cur >= 2) Podio.render(cur - 2, false);
   } catch (e) {
     console.warn('Falha ao ler as fotos:', e.message);
   }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   ROTAÇÃO AUTOMÁTICA  Presencial ↔ EAD
+   ROTAÇÃO AUTOMÁTICA
+   Ranking Presencial → Pódio Presencial → Ranking EAD → Pódio EAD → …
 ═══════════════════════════════════════════════════════════════════════════ */
-const N_TELAS = 2;
-const MSGS = [
-  { txt: '🎓 Agora, o Ranking EAD!', bdg: 'EAD / Semipresencial' },              // 0 → 1
-  { txt: '🏆 Voltamos ao Ranking Presencial!', bdg: 'Matrículas Presenciais' }, // 1 → 0
-];
-const CC = ['#118F40', '#DC931A'];
+const SEQ = [0, 2, 1, 3];                 // ids das telas (sc0..sc3) na ordem
+const DUR = { 0: DURATION, 1: DURATION, 2: 12000, 3: 12000 };
+const MSGS = {                            // mensagem ao SAIR da tela
+  0: { txt: '🥇 O Pódio Presencial!', bdg: 'Top 3 · Matrículas Presenciais' },
+  2: { txt: '🎓 Agora, o Ranking EAD!', bdg: 'EAD / Semipresencial' },
+  1: { txt: '🥇 O Pódio EAD!', bdg: 'Top 3 · EAD / Semipresencial' },
+  3: { txt: '🏆 Voltamos ao Ranking Presencial!', bdg: 'Matrículas Presenciais' },
+};
+const CC = { 0: '#118F40', 2: '#118F40', 1: '#DC931A', 3: '#DC931A' };
 let t0 = null, cTm = null, cTk = null;
 let novaVersao = false;
 
 function mostrarTela(idx) {
-  charts[idx].runRace();
+  if (idx < 2) charts[idx].runRace();
+  else Podio.render(idx - 2, true);
 }
 
 function activateScreen(idx) {
@@ -247,7 +302,7 @@ function doSwitch() {
   clearTimeout(cTm);
   clearInterval(cTk);
   if (novaVersao) { location.reload(); return; } // aplica deploy novo entre telas
-  const nxt = (cur + 1) % N_TELAS;
+  const nxt = SEQ[(SEQ.indexOf(cur) + 1) % SEQ.length];
   const m = MSGS[cur];
   $('tmsg').textContent = m.txt;
   $('tbdg').textContent = m.bdg;
@@ -262,12 +317,13 @@ function startCnt() {
   clearTimeout(cTm);
   clearInterval(cTk);
   t0 = Date.now();
+  const dur = DUR[cur];
   $('cb').style.background = CC[cur];
-  cTm = setTimeout(doSwitch, DURATION);
+  cTm = setTimeout(doSwitch, dur);
   cTk = setInterval(() => {
     const el = Date.now() - t0;
-    $('cb').style.width = Math.min(100, (el / DURATION) * 100) + '%';
-    $('ct').textContent = Math.max(0, Math.ceil((DURATION - el) / 1000)) + 's';
+    $('cb').style.width = Math.min(100, (el / dur) * 100) + '%';
+    $('ct').textContent = Math.max(0, Math.ceil((dur - el) / 1000)) + 's';
   }, 200);
 }
 
@@ -297,6 +353,13 @@ window.addEventListener('resize', () => {
 });
 
 /* INIT */
+// ?tela=0..3 abre direto numa tela (útil para testar o pódio)
+const telaInicial = Number(new URLSearchParams(location.search).get('tela'));
+if (SEQ.includes(telaInicial) && telaInicial !== cur) {
+  $('sc' + cur).classList.remove('on');
+  cur = telaInicial;
+  $('sc' + cur).classList.add('on');
+}
 if (!configOk) {
   $('offline').hidden = false;
   $('offline').textContent = '⚠ Configure VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY';
