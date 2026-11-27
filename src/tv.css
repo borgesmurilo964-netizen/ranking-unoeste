@@ -1,0 +1,137 @@
+/* Estilos da tela da TV (visual original preservado) */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#fff;color:#1c231f;font-family:Georgia,serif}
+#app{width:100%;height:100%;position:relative;overflow:hidden}
+
+/* ══ SCREENS ════════════════════════════════════════════════════════════════ */
+.scr{position:absolute;inset:0;display:flex;flex-direction:column;
+     opacity:0;pointer-events:none;transition:opacity .9s;overflow:hidden}
+.scr.on{opacity:1;pointer-events:all}
+
+/* RANKING screens */
+.scr-rank{padding:18px 26px 10px}
+.sp{background:#ffffff}
+.sp::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(90deg,rgba(17,143,64,.09) 0 1px,transparent 1px 80px)}
+.se{background:#ffffff}
+.se::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(90deg,rgba(220,147,26,.09) 0 1px,transparent 1px 80px)}
+
+/* PODIUM screens */
+.scr-pod{align-items:center;justify-content:flex-start;padding:0}
+
+/* ══ BRAND LOGO ════════════════════════════════════════════════════════════ */
+.brand-logo{display:flex;justify-content:center;align-items:center;
+     flex-shrink:0;padding:2px 0 10px;position:relative;z-index:2}
+.brand-logo img{height:clamp(26px,4.2vh,48px);width:auto;display:block}
+
+/* ══ HEADER ════════════════════════════════════════════════════════════════ */
+.hdr{display:flex;justify-content:space-between;align-items:center;
+     flex-shrink:0;padding-bottom:10px;margin-bottom:10px;position:relative;z-index:2}
+.sp .hdr{border-bottom:2px solid #118F40}
+.se .hdr{border-bottom:2px solid #DC931A}
+.htitle{font-size:clamp(16px,2vw,28px);letter-spacing:2px;text-transform:uppercase;font-weight:700}
+.hsub{font-size:clamp(10px,.95vw,14px);letter-spacing:.4px;opacity:.65;margin-top:2px}
+.sp .htitle{color:#118F40}.se .htitle{color:#DC931A}
+/* ══ CHART AREA ════════════════════════════════════════════════════════════ */
+.chart{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden;position:relative;z-index:1}
+.silk-space{flex-shrink:0}
+.tw{flex:1;position:relative;overflow:visible;min-height:0}
+
+/* ══ ROWS ══════════════════════════════════════════════════════════════════ */
+.row{position:absolute;left:0;right:0;display:grid;
+     grid-template-columns:34px minmax(90px,200px) 1fr 54px;
+     align-items:center;gap:10px;
+     transition:top .7s cubic-bezier(.4,0,.2,1)}
+.rpos{font-size:clamp(12px,1.3vw,18px);font-weight:700;text-align:right;
+      font-variant-numeric:tabular-nums;opacity:0;transition:opacity .4s;white-space:nowrap}
+.sp .rpos{color:#118F40}.se .rpos{color:#DC931A}
+.rname{font-size:clamp(11px,1.1vw,16px);white-space:nowrap;overflow:hidden;
+       text-overflow:ellipsis;opacity:0;transform:translateX(-5px);
+       transition:opacity .4s,transform .4s;color:#20281f}
+.rtrack{position:relative;border-radius:3px;overflow:visible}
+.sp .rtrack{background:#e6f4ec}.se .rtrack{background:#fdecd6}
+.rbar{position:absolute;inset:0;width:0%;border-radius:3px;
+      background:linear-gradient(90deg,var(--bc,#118F40),
+        color-mix(in srgb,var(--bc,#118F40) 60%,#fff));
+      box-shadow:inset 0 0 10px rgba(0,0,0,.2)}
+.silk{position:absolute;bottom:calc(100% + 3px);left:0;
+      transform:translateX(-50%);border-radius:50%;
+      background-size:cover;background-position:center top;
+      border:2px solid rgba(255,255,255,.9);
+      box-shadow:0 0 0 2px rgba(0,0,0,.5),0 2px 8px rgba(0,0,0,.6);
+      animation:bob .75s ease-in-out infinite;z-index:5}
+.silksvg{position:absolute;bottom:calc(100% + 3px);left:0;
+         transform:translateX(-50%);animation:bob .75s ease-in-out infinite;z-index:5}
+.silksvg svg{display:block;transform:scaleX(-1);
+             filter:drop-shadow(0 2px 4px rgba(0,0,0,.7))}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}
+               50%{transform:translateX(-50%) translateY(-4px)}}
+.rval{font-size:clamp(12px,1.3vw,18px);font-weight:700;
+      font-variant-numeric:tabular-nums;opacity:0;
+      color:#20281f;text-align:right;white-space:nowrap}
+.ft{flex-shrink:0;font-size:clamp(8px,.65vw,10px);padding-right:clamp(40px,4vw,70px);
+    color:rgba(0,0,0,.3);text-align:right;margin-top:5px}
+/* ══ TRANSITION OVERLAY ════════════════════════════════════════════════════ */
+#tov{position:absolute;inset:0;z-index:100;display:flex;flex-direction:row;
+     align-items:center;justify-content:center;gap:clamp(18px,3.5vw,44px);
+     background:rgba(0,0,0,.92);opacity:0;pointer-events:none;transition:opacity .5s}
+#tov.on{opacity:1;pointer-events:all}
+#tuninho{height:clamp(90px,16vh,190px);width:auto;opacity:0;flex-shrink:0;
+      transform:scale(.8) translateX(-12px);
+      transition:opacity .4s .1s,transform .4s .1s;
+      filter:drop-shadow(0 8px 24px rgba(0,0,0,.5));
+      animation:bob .9s ease-in-out infinite}
+#tov.on #tuninho{opacity:1;transform:scale(1) translateX(0)}
+.tov-text{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+#tmsg{font-size:clamp(20px,3.5vw,46px);font-weight:700;text-align:left;
+      color:#fff;letter-spacing:2px;text-transform:uppercase;
+      text-shadow:0 2px 16px rgba(0,0,0,.8);
+      opacity:0;transform:scale(.88);transition:opacity .4s .2s,transform .4s .2s}
+#tov.on #tmsg{opacity:1;transform:scale(1)}
+#tbdg{font-size:clamp(11px,1.3vw,18px);letter-spacing:3px;
+      text-transform:uppercase;color:rgba(255,255,255,.55)}
+
+/* ══ COUNTDOWN ════════════════════════════════════════════════════════════ */
+#cw{position:absolute;bottom:0;left:0;right:0;height:4px;
+    background:rgba(0,0,0,.08);z-index:50}
+#cb{height:100%;width:0%}
+#ct{position:absolute;bottom:7px;right:14px;z-index:51;
+    font-size:clamp(10px,.9vw,14px);color:rgba(0,0,0,.35);letter-spacing:1px}
+
+/* ══ OFFLINE BADGE ═════════════════════════════════════════════════════════ */
+#offline{position:absolute;top:8px;right:14px;z-index:60;font-family:Arial,sans-serif;
+  font-size:clamp(10px,.9vw,14px);color:#8a5a00;background:#fff4dc;
+  border:1px solid #f0c060;border-radius:4px;padding:3px 8px}
+
+/* ══ TELA 3: GRÁFICO GERAL ═════════════════════════════════════════════════
+   Pensado para leitura de longe: fontes grandes (em vh), barras grossas,
+   valor sempre ao lado da barra, mesma escala nos dois painéis.            */
+.sg{background:#fff}
+.sg::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(90deg,rgba(17,143,64,.05),rgba(220,147,26,.05))}
+.sg .hdr{border-bottom:2px solid;border-image:linear-gradient(90deg,#118F40,#DC931A) 1}
+.sg .htitle{color:#1c231f}
+.gwrap{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;
+  gap:clamp(16px,2.2vw,44px);position:relative;z-index:1}
+.gpanel{display:flex;flex-direction:column;min-height:0}
+.ghead{display:flex;justify-content:space-between;align-items:baseline;
+  padding:0 2px clamp(6px,1vh,12px);margin-bottom:clamp(6px,1vh,12px);
+  border-bottom:3px solid var(--gc)}
+.gp{--gc:#118F40;--gt:#e6f4ec}.ge{--gc:#DC931A;--gt:#fdecd6}
+.gtitle{font-size:clamp(16px,3vh,36px);font-weight:700;color:var(--gc);
+  letter-spacing:1px;text-transform:uppercase}
+.gtotal{font-size:clamp(13px,2.3vh,28px);color:#1c231f;opacity:.75}
+.gtotal b{font-size:1.25em;opacity:1;color:#1c231f;font-variant-numeric:tabular-nums}
+.gbars{flex:1;min-height:0;display:grid;align-content:start;
+  grid-template-rows:repeat(var(--n,10),minmax(0,var(--rh,1fr)))}
+.gbr{display:grid;grid-template-columns:minmax(0,38%) 1fr minmax(2.6em,auto);
+  align-items:center;gap:clamp(8px,.8vw,16px);min-height:0;
+  font-size:clamp(12px,var(--fs,2.6vh),34px)}
+.gbn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#20281f;font-weight:700}
+.gbn i{font-style:normal;color:var(--gc);display:inline-block;min-width:2.1em}
+.gbt{position:relative;height:62%;background:var(--gt);border-radius:4px}
+.gbb{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:0 4px 4px 0;
+  background:var(--gc);transition:width 1.4s cubic-bezier(.2,.7,.2,1)}
+.gbv{font-weight:700;font-variant-numeric:tabular-nums;color:#20281f;text-align:right}
+.gempty{font-size:clamp(14px,2.6vh,30px);opacity:.5;padding:1em 0}
