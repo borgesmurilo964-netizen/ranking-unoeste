@@ -158,9 +158,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#fff;color:#1c231f;f
   box-shadow:0 0 0 0.4vh rgba(200,205,210,.35),0 1vh 2.4vh rgba(0,0,0,.22)}
 .pst[data-r="3"] .pface{width:17vh;height:17vh;border:0.6vh solid #d39361;
   box-shadow:0 0 0 0.4vh rgba(211,147,97,.3),0 1vh 2.4vh rgba(0,0,0,.22)}
-.pst[data-r="1"] .pface::before{content:"👑";position:absolute;top:-6.2vh;
-  font-size:6vh;animation:crownBob 2s ease-in-out infinite}
-@keyframes crownBob{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-6px) rotate(6deg)}}
 
 .pnm{font-size:clamp(14px,3.2vh,40px);font-weight:700;color:#1c231f;text-align:center;
   max-width:96%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.15}
