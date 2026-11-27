@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Admin — Ranking Unoeste</title>
+</head>
+<body>
+<main>
+  <div class="top">
+    <div class="title">
+      <img src="/logo-unoeste.png" alt="Unoeste" class="logo">
+      <h1>Admin — Ranking de Matrículas</h1>
+      <p>Atualize as matrículas e clique em <b>Salvar alterações</b>. A TV atualiza em até 5 segundos.</p>
+    </div>
+    <div class="actions">
+      <a class="btn btn-ghost" href="/" target="_blank">Abrir tela da TV ↗</a>
+      <button class="btn btn-ghost" id="recarregar">Recarregar</button>
+      <button class="btn btn-save" id="salvar">Salvar alterações</button>
+    </div>
+  </div>
+  <div class="grid">
+    <section class="card pres"><h2>🏆 Presencial <span class="tot" id="tot-presencial"></span></h2><div id="presencial"></div></section>
+    <section class="card ead"><h2>🎓 EAD / Semipresencial <span class="tot" id="tot-ead"></span></h2><div id="ead"></div></section>
+  </div>
+  <div id="status" class="status">Carregando...</div>
+  <p class="hint">📷 Clique na foto (ou no ícone) de um consultor para enviar uma foto nova. Ela é reduzida para 160 px antes de ir para o Supabase.</p>
+  <input type="file" id="arquivo" accept="image/*" hidden>
+</main>
+<script type="module" src="/src/admin.js"></script>
+</body>
+</html>
